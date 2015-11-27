@@ -10,7 +10,9 @@
 
 ## Demo 和调试工具
 
-我们提供了Demo和调试工具给您的开发提供方便，如果对调用参数有疑问，请使用调试工具。对jsapi用法有疑问，可查看Demo.
+我们提供了Demo和调试工具给您的开发提供方便，如果对调用参数有疑问，请使用调试工具。
+
+<!-- 对jsapi用法有疑问，可查看Demo. -->
 
 调试工具: 点击 [https://t.dingtalk.com/invite/index?code=5b2a85509e&inviterUid=80E166E782C43269](https://t.dingtalk.com/invite/index?code=5b2a85509e&inviterUid=80E166E782C43269)申请加入该组织，获得同意后，在 PC 端点击 [工作] - [钉钉API测试]。
 
@@ -73,7 +75,7 @@ js文件版本在添加升级功能时地址会变化，如有需要（比如要
 
 直接引入index.js会得到一个全局变量`DingTalkPC `，支持amd、cmd引入方式
 
-全局变量dd，命名空间：设备(DingTalkPC.device)、业务(DingTalkPC.biz)
+全局变量DingTalkPC，命名空间：设备(DingTalkPC.device)、业务(DingTalkPC.biz)
 
 ### 权限验证配置(beta)
 
@@ -116,11 +118,11 @@ DingTalkPC.ready参数为回调函数，在环境准备就绪时触发，jsapi�
 
 ```javascript
 DingTalkPC.ready(function(){
-    ;
+    //接口操作应该在ready后才可执行
 });
 ```
 
-### 通过error接口处理失败验证
+<!-- ### 通过error接口处理失败验证
 
 config信息验证失败会执行error函数，错误信息可以在返回的error参数中参看
 
@@ -128,7 +130,7 @@ config信息验证失败会执行error函数，错误信息可以在返回的err
 DingTalkPC.error(function(error){
     ;
 });
-```
+``` -->
 
 ### 接口约定
 
@@ -162,7 +164,6 @@ ability | 容器版本，用来标识JSAPI能力，可根据该版本来决定�
 
 ### 获取免登授权码
 
-0.0.5
 
 ```javascript
 DingTalkPC.runtime.permission.requestAuthCode({
@@ -293,10 +294,10 @@ value | 输入的值
 
 ```javascript
 DingTalkPC.device.notification.toast({
-    icon: '', //icon样式，有success和error，默认为空 0.0.2
-    text: String, //提示信息
-    duration: Number, //显示持续时间，单位秒，默认按系统规范[android只有两种(<=2s >2s)]
-    delay: Number, //延迟显示，单位秒，默认0
+    type: "information", //toast的类型 alert, success, error, warning, information, confirm
+    text: '这里是个toast', //提示信息
+    duration: 3, //显示持续时间，单位秒，最短2秒，最长5秒
+    delay: 0, //延迟显示，单位秒，默认0, 最大限制为10
     onSuccess : function(result) {
         /*{}*/
     },
@@ -309,10 +310,43 @@ DingTalkPC.device.notification.toast({
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-icon | Boolean | icon样式，有success和error，默认为空 0.0.2
+type | String | toast的类型 alert, success, error, warning, information, confirm，默认information
 text | String | 提示信息
-duration |  Number |显示持续时间，单位秒，默认按系统规范[android只有两种(<=2s >2s)]
-delay | Number | 延迟显示，单位秒，默认0
+duration |  Number |显示持续时间，单位秒，最小2，最大限制为5
+delay | Number | 延迟显示，单位秒，默认0，最大限制为10
+
+### actionsheet
+
+单选列表
+
+```javascript
+dd.device.notification.actionSheet({
+    title: "谁是最棒哒？", //标题
+    cancelButton: '取消', //取消按钮文本
+    otherButtons: ["孙悟空","猪八戒","唐僧","沙和尚"],
+    onSuccess : function(result) {
+        /*{
+            buttonIndex: 0 //被点击按钮的索引值，Number，从0开始, 取消按钮为-1
+        }*/
+    },
+    onFail : function(err) {}
+})
+```
+<img src="http://gtms04.alicdn.com/tps/i4/TB1mSvwKFXXXXX7XFXXpXX.QFXX-1886-1278.png" width = "350" height = "" alt="图片名称" align=right />
+
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+title | String | 标题
+cancelButton | String |取消按钮文本
+otherButtons | Array[String] | 其他按钮列表
+
+##### 返回说明
+
+参数 | 说明
+----- | -----
+buttonIndex | 被点击按钮的索引值，Number，从0开始, 取消按钮为-1
 
 
 
@@ -325,10 +359,13 @@ DingTalkPC.biz
 
 ### 打开应用内页面
 
-```
+```javascript
 DingTalkPC.biz.util.open({
-    name:String,//页面名称
-    params:JSONObject,//传参
+    name:'profile',//页面名称
+    params:{
+        id: '123456',// String 必选 用户工号
+        corpId:'dingb4ff1079f84f8d54' //String 必选 企业id
+    },//传参
     onSuccess : function() {
         /**/
     },
@@ -343,19 +380,34 @@ params | JSONObject | 传参
 
 目前支持以下页面，具体参数看右边
 
-a.个人资料页
+1. 个人资料页
 
-```
-// 页面名称：
-    profile
-// 传参：
-    id :用户工号 String
-    corpId: '' //企业id
+```javascript
+
+DingTalkPC.biz.util.open({ // 个人资料页 参数例子
+    name: "profile",//必选 页面名称 个人资料页定死'profile'
+    params:{
+        id: "123456",// String 必选 用户工号
+        corpId:"dingb4ff1079f84f8d54" //String 必选 企业id
+    },
+    onSuccess:function() {
+        /**/
+    },
+    onFail:function(err) {}
+})
 ```
 
+参数 | 参数类型 | 必须 | 说明
+----- | ----- | ----- | -----
+name | String |  是    | 固定为 "profile"
+params.id | String | 是 | 用户工号
+params.corpId | String | 是 |企业ID
+
+
+<!--
 b.聊天页面
 
-```
+```javascript
 // 页面名称：
     chat
 // 传参：
@@ -365,7 +417,7 @@ b.聊天页面
 
 c.免费电话页面
 
-```
+```javascript
 // 页面名称：
     call
 // 传参：
@@ -373,7 +425,7 @@ c.免费电话页面
 
 d.联系人添加页面
 
-```
+```javascript
 // 页面名称：
     contactAdd
 // 传参：
@@ -386,7 +438,68 @@ f.唤起添加好友页面
 // 页面名称：
     friendAdd
 // 传参：
+``` -->
+
+### 打开模态框（modal）
+
+打开一个模态框
+
+```javascript
+DingTalkPC.biz.util.openModal({
+    size:'middle',  // modal的尺寸
+    url: 'https://test.dingtalk.com/modal.html', //打开modal的内容的url
+    title: 'modal title', //顶部标题
+    onSuccess : function(result) {
+        /*
+        */
+    },
+    onFail : function() {}
+})
 ```
+
+<img src="http://gtms02.alicdn.com/tps/i2/TB1PqPwKFXXXXa8XFXXsaR5YpXX-1880-1276.png" width = "350" height = "" alt="图片名称" align=right />
+
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+size | String | 模态框的尺寸大小 三种选择 具体看下表
+url | String | 模态框内部显示内容的url
+title | String | 模态框标题
+
+##### 尺寸选择详情：
+
+名称 | size输入 | 尺寸长宽
+----- | ----- | -----
+（默认）大模态框 |  | 包括标题 676px * 545px
+中模态框 | "middle" | 包括标题 440px * 300px
+小模态框 | "mini" | 包括标题 366px * 120px
+
+###打开侧边面板（SlidePanel）
+
+打开侧边面板
+
+```javascript
+DingTalkPC.biz.util.openSlidePanel({
+    url: 'about:blank', //打开侧边栏的url
+    title: 'title', //侧边栏顶部标题
+    onSuccess : function(result) {
+        /*
+        */
+    },
+    onFail : function() {}
+})
+```
+
+<img src="http://gtms02.alicdn.com/tps/i2/TB1mzDBKFXXXXcTXpXXhMAQZVXX-1888-1278.png" width = "350" height = "" alt="图片名称" align=right />
+
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+title | String | 侧边面板顶部显示标题
+url | String | 侧边面板内部显示内容的url
+
 
 ### 上传图片
 选择图片+上传，防止恶意上传
@@ -412,20 +525,116 @@ DingTalkPC.biz.util.uploadImage({
 multiple | Boolean | 是否多选，默认false
 max | Number | Number为正整数，最多可选个数
 
+### 下载文件
+下载一个文件
+
+```javascript
+DingTalkPC.biz.util.downloadFile({
+    url: '//static.dingtalk.com/media/lADOADTWJM0C2M0C7A_748_728.jpg_60x60q90.jpg', //要下载的文件的url
+    name: '一个图片.jpg', //定义下载文件名字
+    onProgress: function(msg){
+      // 文件更新进度条回调
+    },
+    onSuccess : function(result) {
+        /*
+          true
+        */
+    },
+    onFail : function() {}
+})
+```
+
+<img src="http://gtms02.alicdn.com/tps/i2/TB1TfjCKFXXXXXwXFXXDZsQZVXX-1888-1280.png" width = "350" height = "" alt="图片名称" align=right />
+
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+url | String | 要下载文件的url
+name | String | 定义下载文件的名字，记得添加后缀，默认无文件后缀
+onProgress | Function | 文件更新进度条回调
+
+### 打开文件
+
+打开文件接口
+
+```javascript
+DingTalkPC.biz.util.openLocalFile({
+    url: '', //url是缓存文件的key
+    path: '', //可直接输入path，如果url和path都输入了，则优先级path > url
+    onSuccess : function(result) {
+        /*
+          true
+        */
+    },
+    onFail : function() {}
+})
+```
+##### 参数说明（url和path不能同时为空）
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+url | String | url是缓存文件的key 【可选】
+path | String | 可直接输入path【可选】
+
+### 批量检测文件是否存在
+
+批量检测文件是否存在接口
+
+```javascript
+DingTalkPC.biz.util.isLocalFileExist({
+    params: [{
+        url: '', //url是缓存文件的key 【可选】
+        paths: '' //可直接输入path【可选】
+      },{
+        url: '',
+        paths: ''
+      }
+    ], //url是缓存文件的key，也可直接输入path路径，如果url和path都输入了，则优先级path > url
+    onSuccess : function(result) {
+        /*
+          [{
+              url: '', //你请求输入的url
+              path: '', // 你请求输入的path
+              isExist: true //根据你输入的文件的url或path检测出的结果，true:存在，false：不存在
+          }]
+        */
+    },
+    onFail : function() {}
+})
+```
+
+##### 参数说明（url和path不能同时为空）
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+url | String | url是缓存文件的key 【可选】
+path | String | 可直接输入path【可选】
+
+<!-- ##### 返回参数说明
+[{
+    url: '', //你请求输入的url
+    path: '', // 你请求输入的path
+    isExist: true //根据你输入的文件的url或path检测出的结果，true:存在，false：不存在
+}] -->
 
 
-### 图片浏览器
+
+### 预览图片
 
 ```javascript
 DingTalkPC.biz.util.previewImage({
-    urls: [String],//图片地址列表
-    current: String,//当前显示的图片链接
+    urls: ['//static.dingtalk.com/media/1.jpg', '//static.dingtalk.com/media/2.jpg'],//图片地址列表
+    current: '//static.dingtalk.com/media/1.jpg',//当前显示的图片链接
     onSuccess : function(result) {
         /**/
     },
     onFail : function() {}
 })
 ```
+
+<img src="http://gtms02.alicdn.com/tps/i2/TB1SaYsKFXXXXaIXVXXkOgK6FXX-1882-1276.png" width = "350" height = "" alt="图片名称" align=right />
+
 ##### 参数说明
 
 参数 | 参数类型 |说明
@@ -434,7 +643,76 @@ urls | Array[String] | 图片地址列表
 current | String | 当前显示的图片链接
 
 
-## 聊天
+
+### 在浏览器上打开链接
+
+```javascript
+DingTalkPC.biz.util.openLink({
+    url: "http://www.dingtalk.com",//要打开链接的地址
+    onSuccess : function(result) {
+        /**/
+    },
+    onFail : function() {}
+})
+```
+
+参数 | 参数类型 |说明
+----- | ----- | -----
+url | String | 要打开链接的地址
+
+
+## 导航
+
+DingTalkPC.biz
+
+### 退出模态框/侧边面板
+
+```javascript
+DingTalkPC.biz.navigation.quit({
+    message: "quit message",//退出信息
+    onSuccess : function(result) {
+        /**/
+    },
+    onFail : function() {}
+})
+```
+
+参数 | 参数类型 |说明
+----- | ----- | -----
+message | String | 退出信息
+
+### 设置标题
+
+```javascript
+DingTalkPC.biz.navigation.setTitle({
+    title: "lalala",//标题
+    onSuccess : function(result) {
+        /**/
+    },
+    onFail : function() {}
+})
+```
+参数 | 参数类型 |说明
+----- | ----- | -----
+title | String | 标题
+
+### 设置左侧导航按钮
+
+```javascript
+DingTalkPC.biz.navigation.setLeft({
+    text: "lalala",//显示文字信息
+    onSuccess : function(result) {
+        /**/
+    },
+    onFail : function() {}
+})
+```
+
+参数 | 参数类型 |说明
+----- | ----- | -----
+text | String | 显示文字信息
+
+<!-- ## 聊天
 
 DingTalkPC.biz
 
@@ -458,8 +736,77 @@ DingTalkPC.biz.chat.chooseConversation({
 #####　返回说明
 参数 | 说明
 ----- | ------
-id | 会话id
+id | 会话id -->
 
+
+## Ding
+
+DingTalkPC.biz
+
+### 发钉
+
+#### 图片类型
+
+
+```javascript
+DingTalkPC.biz.ding.post({
+    users : ['100', '101'],//用户列表，工号
+    corpId: 'dingb4ff1079f84f8d54', //加密的企业id
+    type: 1, //钉类型 1：image  2：link
+    alertType: 2,
+    alertDate: {"format":"yyyy-MM-dd HH:mm","value":"2015-05-09 08:00"},
+    attachment: {
+        images: [''], //只取第一个image
+    }, //附件信息
+    text: '', //消息体
+    onSuccess : function() {},
+    onFail : function() {}
+})
+```
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+users | Array[String] | 用户列表，工号
+corpId | String | 企业id
+type | Number |Number为整数。钉类型 1：image，2：link
+alertType |  Number |  钉提醒类型 0:电话, 1:短信, 2:应用内
+alertDate |  Object  | 钉提醒时间
+attachment | Object |附件信息
+text | String |  消息体
+
+#### Link类型
+
+
+```javascript
+DingTalkPC.biz.ding.post({
+    users : ['100', '101'],//用户列表，工号
+    corpId: 'dingb4ff1079f84f8d54', //企业id
+    type: 2, //钉类型 1：image  2：link
+    alertType: 2,
+    alertDate: {"format":"yyyy-MM-dd HH:mm","value":"2015-05-09 08:00"},
+    attachment: {
+        title: '', //附件的标题
+        url: '', //附件点击后跳转url
+        image: '', //附件显示时的图片 【可选】
+        text: '' //附件显示时的消息体 【可选】
+    }
+    text: '', //消息体
+    onSuccess : function() {},
+    onFail : function() {}
+})
+```
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+users | Array[String] | 用户列表，工号
+corpId | String | 企业id
+type | Number |Number为整数。钉类型 1：image  2：link
+alertType |  Number |  钉提醒类型 0:电话, 1:短信, 2:应用内
+alertDate |  Object  | 钉提醒时间
+attachment | Object | 附件信息
+text | String |  消息体
 
 
 ## 企业通讯录
@@ -467,29 +814,27 @@ id | 会话id
 DingTalkPC.biz
 
 ###选人
-0.0.6
 
 此接口只能对用户进行选择，若要同时选择部门，请使用“选人，选部门”接口。
 
 ```javascript
 DingTalkPC.biz.contact.choose({
-  startWithDepartmentId: Number, //-1表示打开的通讯录从自己所在部门开始展示, 0表示从企业最上层开始，(其他数字表示从该部门开始:暂时不支持)
-  multiple: Boolean, //是否多选： true多选 false单选； 默认true
-  users: [String, String, ...], //默认选中的用户列表，工号；成功回调中应包含该信息
-  corpId: String, //企业id
-  max: Number, //人数限制，当multiple为true才生效，可选范围1-1500
-  onSuccess: function(data) {
-  /* data结构
-    [{
-      "name": "张三", //姓名
-      "avatar": "http://g.alicdn.com/avatar/zhangsan.png" //头像图片url，可能为空
-      "emplId": '0573', //工号
-     },
-     ...
-    ]
-  */
-  },
-  onFail : function(err) {}
+    multiple: true, //是否多选： true多选 false单选； 默认true
+    users: ['10001', '10002', ...], //默认选中的用户列表，工号；成功回调中应包含该信息
+    corpId: 'dingb4ff1079f84f8d54', //企业id
+    max: 10, //人数限制，当multiple为true才生效，可选范围1-1500
+    onSuccess: function(data) {
+    /* data结构
+      [{
+        "name": "张三", //姓名
+        "avatar": "http://g.alicdn.com/avatar/zhangsan.png" //头像图片url，可能为空
+        "emplId": '0573', //工号
+       },
+       ...
+      ]
+    */
+    },
+    onFail : function(err) {}
 });
 ```
 
@@ -497,7 +842,6 @@ DingTalkPC.biz.contact.choose({
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-startWithDepartmentId | Number | -1表示从自己所在部门开始, 0表示从企业最上层开始，(其他数字表示从该部门开始:暂时不支持)
 multiple | Boolean | 是否多选： true多选，false单选； 默认true
 users | Array[String] | 默认选中的用户列表，工号；成功回调中应包含该信息
 corpId | String | 企业id
@@ -516,87 +860,31 @@ name | 姓名
 avatar | 头像图片url，可能为空
 emplId | 工号
 
-###选人，选部门
 
-0.0.6
+## 自定义联系人
+
+DingTalkPC.biz
+
+### 单选自定义联系人
+
+选单人
 
 ```javascript
-DingTalkPC.biz.contact.complexChoose({
-  startWithDepartmentId: Number, //-1表示从自己所在部门开始, 0表示从企业最上层开始，(其他数字表示从该部门开始:暂时不支持)
-  selectedUsers: [String, String, ...], //预选用户
-  corpId: String, //企业id
-  onSuccess: function(data) {
-  /* data结构
-    {
-      "users": [
-      {
+DingTalkPC.biz.customContact.choose({
+    title: '选人的标题', //标题
+    users: ['10001', '10002', ...],//一组员工工号
+    corpId: 'dingb4ff1079f84f8d54',//加密的企业 ID，
+    isShowCompanyName: true,   //true|false，默认为 false
+    onSuccess: function(data) {
+    /* data结构
+      [{
         "name": "张三", //姓名
-        "avatar": "htp://g.alicdn.com/avatar/zhangsan.png" //头像图片url，可能为空
-        "emplId": "0573", //工号:
-      },
-      ...
-      ],
-      "department": [
-      {
-        "id": 2,
-        "name": "来往事业部",
-      },
-      ...
+        "avatar": "http://g.alicdn.com/avatar/zhangsan.png" //头像图片url，可能为空
+        "emplId": '0573', //工号
+       },
+       ...
       ]
-    }
-  */
-  },
-  onFail : function(err) {}
-});
-```
-
-##### 参数说明
-
-参数 | 参数类型 | 说明
------ | ----- | -----
-startWithDepartmentId | Number | -1表示从自己所在部门开始, 0表示从企业最上层开始，(其他数字表示从该部门开始:暂时不支持)
-selectedUsers | Array[String] | 预选用户
-corpId | String | 企业id
-
-<!--隐藏selectedDepartments
-selectedDepartments | Array | 预选部门 id必选，name可选
-selectedDepartments: [{name: '', id: ''}, ...],//预选部门 id必选，name可选
--->
-
-#####　返回说明
-
-参数 | 说明
-------|------
-users | 选取的用户
-users.name | 姓名
-users.avatar | 头像图片url，可能为空
-users.emplId | 工号
-department | 选取的部门
-department.id | 部门id
-department.name | 部门名称
-
-<!-- ### 选取
-
-默认展示当前  业通讯录，开发中
-
-```javascript
-DingTalkPC.biz.contact.choose({
-    multiple: true, //是否多选： true多选 false单选； 默认true
-    users: ['100','101'], //默认选中的用户列表，工号；成功回调中应包含该信息
-    corpId: '', //企业id
-    max: 50, //人数限制，当multiple为true才生效，可选范围1-1500
-    onSuccess : function(result) {
-        /*
-        [{
-            emplId: '0573', //工号
-            name: '张三', //姓名
-            nickNameCn: '三张', //花名
-            mobilePhone: '****', //手机号 后续不再返回该字段
-            emailAddr: '***', //邮箱  后期不再返回该字段
-            pinyin: 'zhangsan', //姓名拼音
-            avatar: 'htp://g.alicdn.com/avatar/zhangsan.png' //头像图片url，可能为空
-        }]
-        */
+    */
     },
     onFail : function(err) {}
 });
@@ -606,26 +894,101 @@ DingTalkPC.biz.contact.choose({
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-multiple | Boolean | 是否多选： true多选 false单选； 默认true
-users | Array[String] | 默认选中的用户列表，工号；成功回调中应包含该信息
-corpId | String |  企业id
-max | Number| Number为正整数。人数限制，当multiple为true才生效，可选范围1-1500
+corpId | String | 企业ID
+users | Array[String] | 一组员工工号
+isShowCompanyName | Boolean | 是否显示公司名称
+title | String | 标题
+
+#####　返回说明
+
+参数 | 说明
+------|------
+name | 姓名
+avatar | 头像图片url，可能为空
+emplId | 工号
+
+
+### 多选自定义联系人
+
+选多人
+
+```javascript
+DingTalkPC.biz.customContact.multipleChoose({
+    title: '多选人的标题', //标题
+    users: ['10001', '10002', ...],//一组员工工号
+    corpId: 'dingb4ff1079f84f8d54',//企业 ID，
+    isShowCompanyName: false,   //true|false，默认为 false
+    selectedUsers: ["18658"], //默认选中的人
+    disabledUsers: ["78308"], //不能选的人
+    max: 10, //人数限制
+    onSuccess: function(data) {
+    /* data结构
+      [{
+        "name": "张三", //姓名
+        "avatar": "http://g.alicdn.com/avatar/zhangsan.png" //头像图片url，可能为空
+        "emplId": '0573', //工号
+       },
+       ...
+      ]
+    */
+    },
+    onFail : function(err) {}
+});
+```
+
+##### 参数说明
+
+参数 | 参数类型 | 说明
+----- | ----- | -----
+corpId | String | 企业ID
+users | Array[String] | 是否多选： true多选，false单选； 默认true
+isShowCompanyName | Boolean | 默认选中的用户列表，工号；成功回调中应包含该信息
+title | String | 选择窗口的标题
+selectedUsers | Array[String] | 默认选中的人
+disabledUsers | Array[String] | 不能选的人
+max | Number | 人数限制
 
 
 #####　返回说明
 
 参数 | 说明
 ------|------
-emplID | 是否多选： true多选 false单选； 默认true
 name | 姓名
-nickNameCn | 花名
-mobilePhone | 手机号，后续不再返回该字段
-emailAddr | 邮箱，后期不再返回该字段
-pinyin | 姓名拼音
-avatar | 头像图片url，可能为空 -->
+avatar | 头像图片url，可能为空
+emplId | 工号
+
+## 聊天
+DingTalkPC.biz
+
+### 选择会话
+
+```javascript
+DingTalkPC.biz.chat.chooseConversation({
+    onSuccess: function(data) {
+    /* data结构
+      {
+        "id":"25001:2442003", //会话id
+        "title":"钉钉-轻浅-pc专业户" // 会话名称
+      }
+    */
+    },
+    onFail : function(err) {}
+});
+```
+
+#### 参数说明
+
+空
 
 
-## 导航栏
+#### 返回说明
+
+参数 | 说明
+------|------
+id | 会话id
+title | 会话名称
+
+<!-- ## 导航栏
 
 DingTalkPC.biz
 
@@ -701,7 +1064,7 @@ DingTalkPC.biz.navigation.setTitle({
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-title | String | 控制标题文本，空字符串表示显示默认文本
+title | String | 控制标题文本，空字符串表示显示默认文本 -->
 
 ## 附录
 
