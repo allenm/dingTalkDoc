@@ -118,19 +118,22 @@ DingTalkPC.ready参数为回调函数，在环境准备就绪时触发，jsapi�
 
 ```javascript
 DingTalkPC.ready(function(){
-    //接口操作应该在ready后才可执行
+    //接口操作应该在ready后才可调用
 });
 ```
 
-<!-- ### 通过error接口处理失败验证
+### 通过error接口处理失败验证
 
 config信息验证失败会执行error函数，错误信息可以在返回的error参数中参看
 
 ```javascript
 DingTalkPC.error(function(error){
-    ;
+  /*{
+      errorCode: 1001, //错误码
+      errorMessage: '', //错误信息
+  }*/
 });
-``` -->
+```
 
 ### 接口约定
 
@@ -156,18 +159,15 @@ DingTalkPC.命名空间.功能.方法({
 })
 ```
 
-##### 返回说明
 
-参数 | 说明
----- | -----
-ability | 容器版本，用来标识JSAPI能力，可根据该版本来决定能否使用jsapi
 
 ### 获取免登授权码
 
 
 ```javascript
 DingTalkPC.runtime.permission.requestAuthCode({
-    corpId: "corpid",
+    corpId: "", //企业ID
+    url: "", //期望跳转的url
     onSuccess: function(result) {
     /*{
         code: 'hYLK98jkf0m' //string authCode
@@ -182,6 +182,7 @@ DingTalkPC.runtime.permission.requestAuthCode({
 参数 | 参数类型 | 必须 | 说明
 ----- | ------- | ------- | ------
 corpId | String | 是 | 企业ID
+url | String | 是 | 期望跳转的url
 
 ##### 返回说明
 
@@ -320,7 +321,7 @@ delay | Number | 延迟显示，单位秒，默认0，最大限制为10
 单选列表
 
 ```javascript
-dd.device.notification.actionSheet({
+DingTalkPC.device.notification.actionSheet({
     title: "谁是最棒哒？", //标题
     cancelButton: '取消', //取消按钮文本
     otherButtons: ["孙悟空","猪八戒","唐僧","沙和尚"],
@@ -511,7 +512,7 @@ DingTalkPC.biz.util.uploadImage({
     onSuccess : function(result) {
         /*
         [
-          'http://gtms03.alicdn.com/tps/i3/TB1VF6uGFXXXXalaXXXmh5R_VXX-237-236.png'
+          'https://static.dingtalk.com/media/lADOA9bQH8zIzMg_200_200.jpg'
         ]
         */
     },
@@ -525,6 +526,7 @@ DingTalkPC.biz.util.uploadImage({
 multiple | Boolean | 是否多选，默认false
 max | Number | Number为正整数，最多可选个数
 
+
 ### 下载文件
 下载一个文件
 
@@ -533,7 +535,7 @@ DingTalkPC.biz.util.downloadFile({
     url: '//static.dingtalk.com/media/lADOADTWJM0C2M0C7A_748_728.jpg_60x60q90.jpg', //要下载的文件的url
     name: '一个图片.jpg', //定义下载文件名字
     onProgress: function(msg){
-      // 文件更新进度条回调
+      // 文件下载进度回调
     },
     onSuccess : function(result) {
         /*
@@ -551,8 +553,8 @@ DingTalkPC.biz.util.downloadFile({
 参数 | 参数类型 | 说明
 ----- | ----- | -----
 url | String | 要下载文件的url
-name | String | 定义下载文件的名字，记得添加后缀，默认无文件后缀
-onProgress | Function | 文件更新进度条回调
+name | String | 定义下载文件的名字，记得添加文件扩展名，默认无文件扩展名
+onProgress | Function | 文件下载进度回调
 
 ### 打开文件
 
@@ -561,7 +563,6 @@ onProgress | Function | 文件更新进度条回调
 ```javascript
 DingTalkPC.biz.util.openLocalFile({
     url: '', //url是缓存文件的key
-    path: '', //可直接输入path，如果url和path都输入了，则优先级path > url
     onSuccess : function(result) {
         /*
           true
@@ -570,12 +571,12 @@ DingTalkPC.biz.util.openLocalFile({
     onFail : function() {}
 })
 ```
-##### 参数说明（url和path不能同时为空）
+##### 参数说明
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-url | String | url是缓存文件的key 【可选】
-path | String | 可直接输入path【可选】
+url | String | url是缓存文件的key
+
 
 ### 批量检测文件是否存在
 
@@ -584,11 +585,9 @@ path | String | 可直接输入path【可选】
 ```javascript
 DingTalkPC.biz.util.isLocalFileExist({
     params: [{
-        url: '', //url是缓存文件的key 【可选】
-        paths: '' //可直接输入path【可选】
+        url: '', //url是缓存文件的key
       },{
-        url: '',
-        paths: ''
+        url: ''
       }
     ], //url是缓存文件的key，也可直接输入path路径，如果url和path都输入了，则优先级path > url
     onSuccess : function(result) {
@@ -604,20 +603,11 @@ DingTalkPC.biz.util.isLocalFileExist({
 })
 ```
 
-##### 参数说明（url和path不能同时为空）
+##### 参数说明
 
 参数 | 参数类型 | 说明
 ----- | ----- | -----
-url | String | url是缓存文件的key 【可选】
-path | String | 可直接输入path【可选】
-
-<!-- ##### 返回参数说明
-[{
-    url: '', //你请求输入的url
-    path: '', // 你请求输入的path
-    isExist: true //根据你输入的文件的url或path检测出的结果，true:存在，false：不存在
-}] -->
-
+url | String | url是缓存文件的key
 
 
 ### 预览图片
@@ -665,7 +655,8 @@ url | String | 要打开链接的地址
 
 DingTalkPC.biz
 
-### 退出模态框/侧边面板
+### 触发关闭
+注意：只在SlidePanel和Modal里起作用
 
 ```javascript
 DingTalkPC.biz.navigation.quit({
@@ -682,6 +673,7 @@ DingTalkPC.biz.navigation.quit({
 message | String | 退出信息
 
 ### 设置标题
+注意：只在SlidePanel和Modal里起作用
 
 ```javascript
 DingTalkPC.biz.navigation.setTitle({
@@ -698,6 +690,8 @@ title | String | 标题
 
 ### 设置左侧导航按钮
 
+注意：只在SlidePanel里起作用
+
 ```javascript
 DingTalkPC.biz.navigation.setLeft({
     text: "lalala",//显示文字信息
@@ -712,31 +706,18 @@ DingTalkPC.biz.navigation.setLeft({
 ----- | ----- | -----
 text | String | 显示文字信息
 
-<!-- ## 聊天
+#### 设置左侧按钮点击后的回调
 
-DingTalkPC.biz
-
-
-### 选择会话(群)
-
-类似分享到钉钉的选取页面，只能选一个回话 0.0.3
+DingTalkPC.addEventListener('leftBtnClick', handleFn);
 
 ```javascript
-DingTalkPC.biz.chat.chooseConversation({
-    onSuccess : function(data) {
-    /*
-    {
-        id: '123' //会话id
-    }
-    */
-    },
-    onFail : function() {}
-})
+//添加监听回调函数
+DingTalkPC.addEventListener('leftBtnClick', handleFn);
+
+//移除相应handleFn的监听回调函数
+DingTalkPC.removeEventListener('leftBtnClick', handleFn);
+
 ```
-#####　返回说明
-参数 | 说明
------ | ------
-id | 会话id -->
 
 
 ## Ding
@@ -957,7 +938,7 @@ name | 姓名
 avatar | 头像图片url，可能为空
 emplId | 工号
 
-## 聊天
+<!-- ## 聊天
 DingTalkPC.biz
 
 ### 选择会话
@@ -986,85 +967,7 @@ DingTalkPC.biz.chat.chooseConversation({
 参数 | 说明
 ------|------
 id | 会话id
-title | 会话名称
-
-<!-- ## 导航栏
-
-DingTalkPC.biz
-
-### 设置左侧导航按钮
-只支持iOS
-
-```javascript
-DingTalkPC.biz.navigation.setLeft({
-    show: false,//控制按钮显示， true 显示， false 隐藏， 默认true
-    control: true,//是否控制点击事件，true 控制，false 不控制， 默认false
-    showIcon: true,//是否显示icon，true 显示， false 不显示，默认true； 注：具体UI以客户端为准
-    text: '',//控制显示文本，空字符串表示显示默认文本
-    onSuccess : function(result) {
-        /*
-        {}
-        */
-    },
-    onFail : function(err) {}
-});
-```
-##### 参数说明
-
-参数 | 参数类型 | 说明
------ | ----- | -----
-show | Boolean | 控制按钮显示， true 显示， false 隐藏， 默认true
-control | Boolean | 是否控制点击事件，true 控制，false 不控制， 默认false
-showIcon | Boolean | 是否显示icon，true 显示，false 不显示，默认true； 注：具体UI以客户端为准
-text | String | 控制显示文本，空字符串表示显示默认文本
-
-### 设置右侧导航按钮
-
-```javascript
-DingTalkPC.biz.navigation.setRight({
-    show: false,//控制按钮显示， true 显示， false 隐藏， 默认true
-    control: true,//是否控制点击事件，true 控制，false 不控制， 默认false
-    showIcon: true,//是否显示icon，true 显示， false 不显示，默认true； 注：具体UI以客户端为准
-    text: '发送',//控制显示文本，空字符串表示显示默认文本            
-    onSuccess : function(result) {
-        /*
-        {}
-        */
-    },
-    onFail : function(err) {}
-});
-```
-
-##### 参数说明
-
-参数 | 参数类型 | 说明
------ | ----- | -----
-show | Boolean | 控制按钮显示， true 显示， false 隐藏， 默认true
-control | Boolean | 是否控制点击事件，true 控制，false 不控制， 默认false
-showIcon | Boolean  | 是否显示icon，true 显示，false 不显示，默认true； 注：具体UI以客户端为准
-text | String | 控制显示文本，空字符串表示显示默认文本
-
-
-可通过拼接url方式隐藏 showmenu=false
-
-### 设置标题
-
-```javascript
-DingTalkPC.biz.navigation.setTitle({
-    title : '邮箱正文',//控制标题文本，空字符串表示显示默认文本
-    onSuccess : function(result) {
-        /*结构
-        {
-        }*/
-    },
-    onFail : function(err) {}
-});
-```
-##### 参数说明
-
-参数 | 参数类型 | 说明
------ | ----- | -----
-title | String | 控制标题文本，空字符串表示显示默认文本 -->
+title | 会话名称 -->
 
 ## 附录
 
@@ -1129,24 +1032,46 @@ signature = sha1(str);
 
 ### 容器能力
 
+[runtime.permission.requestAuthCode](#获取免登授权码)
+
 [device.notification.alert](#alert)
 
 [device.notification.confirm](#confirm)
 
 [device.notification.prompt](#prompt)
 
+[device.notification.toast](#toast)
+
+[device.notification.actionSheet](#actionSheet)
+
 [biz.util.open](#打开应用内页面)
 
-[biz.contact.choose](#选人)
+[biz.util.openModal](#打开模态框（modal）)
 
-[biz.navigation.setLeft](#设置左侧导航按钮)
-
-[biz.navigation.setTitle](#设置标题)
-
-[device.notification.toast](#toast)
+[biz.util.openSlidePanel](#打开侧边面板（SlidePanel）)
 
 [biz.util.uploadImage](#上传图片)
 
-[biz.util.previewImage](#图片浏览器)
+[biz.util.downloadFile](#下载文件)
 
-[runtime.permission.requestAuthCode](#获取免登授权码)
+[biz.util.openLocalFile](#打开文件)
+
+[biz.util.isLocalFileExist](#批量检测文件是否存在)
+
+[biz.util.previewImage](#预览图片)
+
+[biz.util.openLink](#在浏览器上打开链接)
+
+[biz.navigation.quit](#触发关闭)
+
+[biz.navigation.setTitle](#设置标题)
+
+[biz.navigation.setLeft](#设置左侧导航按钮)
+
+[biz.ding.post](#发钉)
+
+[biz.contact.choose](#选人)
+
+[biz.customContact.choose](#单选自定义联系人)
+
+[biz.customContact.multipleChoose](#多选自定义联系人)
