@@ -117,8 +117,12 @@ jsApiList | Array | 是 | 需要调用的jsapi列表
 DingTalkPC.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
 
 ```javascript
-DingTalkPC.ready(function(){
-    //接口操作应该在ready后才可调用
+DingTalkPC.ready(function(res){
+  /*{
+      authorizedAPIList: ['device.notification.alert'], //已授权API列表
+      unauthorizedAPIList: [''], //未授权API列表
+  }*/
+  //接口操作应该在ready后才可调用
 });
 ```
 
@@ -1030,6 +1034,7 @@ signature = sha1(str);
 
 310x310 => _310x310.jpg
 
+<!--
 ### 容器能力
 
 [runtime.permission.requestAuthCode](#获取免登授权码)
@@ -1074,4 +1079,4 @@ signature = sha1(str);
 
 [biz.customContact.choose](#单选自定义联系人)
 
-[biz.customContact.multipleChoose](#多选自定义联系人)
+[biz.customContact.multipleChoose](#多选自定义联系人) -->
