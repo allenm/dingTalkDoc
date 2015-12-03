@@ -171,7 +171,7 @@ DingTalkPC.命名空间.功能.方法({
 ```javascript
 DingTalkPC.runtime.permission.requestAuthCode({
     corpId: "", //企业ID
-    url: "", //期望跳转的url
+    url: "", //当前的url
     onSuccess: function(result) {
     /*{
         code: 'hYLK98jkf0m' //string authCode
@@ -186,7 +186,7 @@ DingTalkPC.runtime.permission.requestAuthCode({
 参数 | 参数类型 | 必须 | 说明
 ----- | ------- | ------- | ------
 corpId | String | 是 | 企业ID
-url | String | 是 | 期望跳转的url
+url | String | 是 | 当前的url
 
 ##### 返回说明
 
@@ -387,19 +387,21 @@ params | JSONObject | 传参
 
 1. 个人资料页
 
-```javascript
+传参例子(右旁代码区)以及参数说明
 
-DingTalkPC.biz.util.open({ // 个人资料页 参数例子
-    name: "profile",//必选 页面名称 个人资料页定死'profile'
-    params:{
-        id: "123456",// String 必选 用户工号
-        corpId:"dingb4ff1079f84f8d54" //String 必选 企业id
+```
+{
+    "name": "profile",
+    "params":{
+        "id": "123456",
+        "corpId":"dingb4ff1079f84f8d54"
     },
-    onSuccess:function() {
-        /**/
+    "onSuccess":function() {
+
     },
-    onFail:function(err) {}
-})
+    "onFail":function(err) {}
+}
+
 ```
 
 参数 | 参数类型 | 必须 | 说明
@@ -456,6 +458,7 @@ DingTalkPC.biz.util.openModal({
     title: 'modal title', //顶部标题
     onSuccess : function(result) {
         /*
+
         */
     },
     onFail : function() {}
@@ -560,13 +563,13 @@ url | String | 要下载文件的url
 name | String | 定义下载文件的名字，记得添加文件扩展名，默认无文件扩展名
 onProgress | Function | 文件下载进度回调
 
-### 打开文件
+### 打开本地文件
 
-打开文件接口
+打开本地文件接口
 
 ```javascript
 DingTalkPC.biz.util.openLocalFile({
-    url: '', //url是缓存文件的key
+    url: '', //本地文件的url
     onSuccess : function(result) {
         /*
           true
@@ -582,24 +585,24 @@ DingTalkPC.biz.util.openLocalFile({
 url | String | url是缓存文件的key
 
 
-### 批量检测文件是否存在
+### 批量检测本地文件是否存在
 
-批量检测文件是否存在接口
+批量检测本地文件是否存在
 
 ```javascript
 DingTalkPC.biz.util.isLocalFileExist({
     params: [{
-        url: '', //url是缓存文件的key
+        url: '', //本地文件的url
       },{
         url: ''
       }
-    ], //url是缓存文件的key，也可直接输入path路径，如果url和path都输入了，则优先级path > url
+    ],
     onSuccess : function(result) {
         /*
           [{
-              url: '', //你请求输入的url
-              path: '', // 你请求输入的path
-              isExist: true //根据你输入的文件的url或path检测出的结果，true:存在，false：不存在
+              url: '', //本地文件的url
+              path: '', // 文件的path
+              isExist: true //根据你输入的文件的url检测出的结果，true:存在，false：不存在
           }]
         */
     },
@@ -664,7 +667,7 @@ DingTalkPC.biz
 
 ```javascript
 DingTalkPC.biz.navigation.quit({
-    message: "quit message",//退出信息
+    message: "quit message",//退出信息，传递给openModal或者openSlidePanel的onSuccess函数的result参数
     onSuccess : function(result) {
         /**/
     },
@@ -674,7 +677,7 @@ DingTalkPC.biz.navigation.quit({
 
 参数 | 参数类型 |说明
 ----- | ----- | -----
-message | String | 退出信息
+message | String | 退出信息，传递给openModal或者openSlidePanel的onSuccess函数的result参数
 
 ### 设置标题
 注意：只在SlidePanel和Modal里起作用
@@ -755,7 +758,7 @@ DingTalkPC.biz.ding.post({
 users | Array[String] | 用户列表，工号
 corpId | String | 企业id
 type | Number |Number为整数。钉类型 1：image，2：link
-alertType |  Number |  钉提醒类型 0:电话, 1:短信, 2:应用内
+alertType |  Number |  钉提醒类型 0：电话, 1：短信, 2：应用内
 alertDate |  Object  | 钉提醒时间
 attachment | Object |附件信息
 text | String |  消息体
@@ -788,7 +791,7 @@ DingTalkPC.biz.ding.post({
 users | Array[String] | 用户列表，工号
 corpId | String | 企业id
 type | Number |Number为整数。钉类型 1：image  2：link
-alertType |  Number |  钉提醒类型 0:电话, 1:短信, 2:应用内
+alertType |  Number |  钉提醒类型 0：电话, 1：短信, 2：应用内
 alertDate |  Object  | 钉提醒时间
 attachment | Object | 附件信息
 text | String |  消息体
