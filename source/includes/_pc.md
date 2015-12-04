@@ -165,13 +165,12 @@ DingTalkPC.命名空间.功能.方法({
 
 
 
-### 获取免登授权码
+###PC版获取免登授权码
 
 
 ```javascript
 DingTalkPC.runtime.permission.requestAuthCode({
     corpId: "", //企业ID
-    url: "", //当前的url
     onSuccess: function(result) {
     /*{
         code: 'hYLK98jkf0m' //string authCode
@@ -186,7 +185,6 @@ DingTalkPC.runtime.permission.requestAuthCode({
 参数 | 参数类型 | 必须 | 说明
 ----- | ------- | ------- | ------
 corpId | String | 是 | 企业ID
-url | String | 是 | 当前的url
 
 ##### 返回说明
 
@@ -855,7 +853,7 @@ DingTalkPC.biz
 
 ### 单选自定义联系人
 
-选单人
+选取单个自定义联系人
 
 ```javascript
 DingTalkPC.biz.customContact.choose({
@@ -898,7 +896,7 @@ emplId | 工号
 
 ### 多选自定义联系人
 
-选多人
+选取多个自定义联系人
 
 ```javascript
 DingTalkPC.biz.customContact.multipleChoose({
