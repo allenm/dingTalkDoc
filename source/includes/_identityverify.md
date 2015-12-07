@@ -49,12 +49,39 @@ demo地址:[<font color=red >https://github.com/injekt/openapi-demo-php/blob/mas
 
 ##钉钉PC版调用免登
 
-敬请期待
+### 使用JS-API(推荐使用)
+
+步骤一：首先需要获取当前用户的corpid。ISV开发者请在微应用主页地址使用$CORPID$模板参数表示corpid，用户访问微应用的时候钉钉服务器将把$CORPID$替换成用户所属企业的corpid，例如原本的主页地址是http://www.dingtalk.com/index，则能获取用户corpid的主页地址为http://www.dingtalk.com/index?corpid=$CORPID$
+
+步骤二：使用钉钉js-api提供的[<font color=red >PC版获取免登授权码</font>](#pc版获取免登授权码)接口获取CODE
+
+步骤二：[<font color=red >通过CODE换取身份</font>](#通过code换取用户身份)
+
+demo： 可参考手机客户端免登demo，但全局变量dd替换成DingTalkPC
+
+### 使用标准OAUTH2.0
+[<font color=red >什么是OAUTH2.0</font>](#http://tools.ietf.org/html/rfc6749)
+
+步骤一：企业在后台构造一个连接，通过HTTP 302跳转方式，让用户访问钉钉开放平台授权网址，构造的地址如下:
+
+`https://oapi.dingtalk.com/connect/oauth2/authorize?appid=CORPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE`
+
+其中REDIRECT_URI为企业H5地址，钉钉开放平台授权服务器如果判断当前用户属于当前企业时，会再次通过HTTP 302跳转回企业应用的H5地址(即REDIRECT_URI)，并在H5的URL后面追加参数code=CODE&state=STATE,即
+
+`REDIRECT_URI?code=CODE&state=abcd1234`
+
+步骤二：企业在后台解析code参数，获取CODE
+
+步骤三：[<font color=red >通过CODE换取身份</font>](#通过code换取用户身份)
+
+<aside class="notice">
+有安全限制，REDIRECT_URI域名必须包含在企业所有的微应用域名内,否则会提示无权访问页面，微应用请到钉钉oa后台->选择微应用菜单->微应用中心，添加微应用
+</aside>
 
 
 
 ##OA后台调用管理员免登
-**前置条件** 
+**前置条件**
 
 **本节描述的免登服务将在管理员访问微应用后台地址时调用**
 
@@ -68,7 +95,7 @@ demo地址:[<font color=red >https://github.com/injekt/openapi-demo-php/blob/mas
 
 使用场景：希望管理员登录到后台地址的时候获取相关管理员信息。
 
-**使用方法** 
+**使用方法**
 
 步骤一：在管理员访问后台地址的时候，企业在后台构造一个连接，通过HTTP 302跳转方式，让用户访问钉钉开放平台授权网址，构造的地址如下:
 
@@ -91,5 +118,3 @@ REDIRECT_URL为微应用后台地址，钉钉开放平台授权服务器如果�
 步骤四：[<font color=red >通过CODE和Token换取管理员身份</font>](#通过code换取管理员身份)
 
 demo查看:[https://github.com/injekt/openapi-demo-java/tree/master/src/com/alibaba/dingtalk/openapi/servlet](https://github.com/injekt/openapi-demo-java/tree/master/src/com/alibaba/dingtalk/openapi/servlet)
-
-
